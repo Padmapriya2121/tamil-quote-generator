@@ -1,7 +1,6 @@
 // =============================================
 // TAMIL QUOTE GENERATOR — Complete Script
 // =============================================
-const GEMINI_API_KEY = 'AIzaSyBVhsHot-_9gx4boVMwp8gVURgeBcVWJyA';
 
 // =============================================
 // QUOTE DATABASE
@@ -303,13 +302,11 @@ async function renderKural() {
       <div class="card-tamil">${k.Line1}<br>${k.Line2}</div>
       <div class="card-english">${k.Translation}</div>
       <div class="kural-explanation">${k.explanation || ''}</div>
-      <div class="ai-explanation" id="explanation-${k.Number}" style="display:none;background:rgba(201,168,76,0.08);border:1px solid var(--gold);border-radius:8px;padding:12px;margin-top:10px;font-size:0.85rem;color:var(--white-dim);line-height:1.6;"></div>
       <div class="card-footer">
         <span class="card-author">திருவள்ளுவர்</span>
         <span class="card-actions">
           <button class="card-btn" title="Listen" onclick="speakKural('${tamil}')">🔊</button>
           <button class="card-btn" title="Copy" onclick="copyKural('${tamil}','${eng}','திருவள்ளுவர்')">📋</button>
-          <button class="card-btn" title="AI Explain" id="explain-${k.Number}" onclick="explainKural('${tamil}','${eng}',${k.Number})">🧠</button>
         </span>
       </div>
     </div>`;
@@ -323,44 +320,6 @@ function speakKural(text) {
   utt.rate = 0.85;
   window.speechSynthesis.speak(utt);
   showToast('🔊 Reading kural aloud...');
-}
-
-async function explainKural(tamil, english, number) {
-  const btn = document.getElementById(`explain-${number}`);
-  const box = document.getElementById(`explanation-${number}`);
-  if (!btn || !box) return;
-
-  btn.textContent = '⏳';
-  btn.disabled = true;
-  box.style.display = 'block';
-  box.textContent = '🤖 AI is thinking...';
-
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `Explain this Thirukkural in simple modern English in 3-4 sentences. Make it relatable to today's life and practical for students.
-
-Kural ${number}: ${tamil}
-English meaning: ${english}
-
-Keep it simple, clear and inspiring.`
-          }]
-        }]
-      })
-    });
-    const data = await response.json();
-    const explanation = data.candidates[0].content.parts[0].text;
-    box.innerHTML = '🤖 <strong>AI Explanation:</strong><br>' + explanation;
-    btn.textContent = '✅';
-  } catch(e) {
-    box.textContent = '❌ Could not load explanation. Check internet.';
-    btn.textContent = '🧠';
-    btn.disabled = false;
-  }
 }
 function copyKural(tamil, english, author) {
   navigator.clipboard.writeText(`"${tamil}"\n\n${english}\n— ${author}\n\n#Thirukkural #TamilWisdom`);
