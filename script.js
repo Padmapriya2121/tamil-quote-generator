@@ -171,8 +171,7 @@ function copyQuote() {
 function speakQuote() {
   if (!currentQuote) return;
   window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(currentQuote.tamil);
-  utt.lang = 'ta-IN';
+  const utt = new SpeechSynthesisUtterance(currentQuote.tamil + '. ' + currentQuote.english);
   utt.rate = 0.85;
   window.speechSynthesis.speak(utt);
   showToast('🔊 Reading quote aloud...');
@@ -316,7 +315,6 @@ async function renderKural() {
 function speakKural(text) {
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'ta-IN';
   utt.rate = 0.85;
   window.speechSynthesis.speak(utt);
   showToast('🔊 Reading kural aloud...');
